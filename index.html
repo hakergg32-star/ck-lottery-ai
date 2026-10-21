@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CK Lottery AI Predictor (Big / Small)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+        .app-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 420px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            text-align: center;
+        }
+        .header {
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #58a6ff;
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+        .header p {
+            color: #8b949e;
+            font-size: 13px;
+        }
+        .badge {
+            display: inline-block;
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .timer-container {
+            background: #21262d;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #30363d;
+        }
+        .timer-label {
+            font-size: 12px;
+            color: #8b949e;
+        }
+        .timer-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #f2e354;
+        }
+        .prediction-box {
+            background: #0d1117;
+            border: 2px dashed #30363d;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            min-height: 110px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .result-text {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        .big-result {
+            color: #2ea043;
+            text-shadow: 0 0 10px rgba(46, 160, 67, 0.4);
+        }
+        .small-result {
+            color: #f85149;
+            text-shadow: 0 0 10px rgba(248, 81, 73, 0.4);
+        }
+        .accuracy-text {
+            font-size: 13px;
+            color: #8b949e;
+        }
+        .btn-predict {
+            width: 100%;
+            background: #238636;
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .btn-predict:hover {
+            background: #2ea043;
+        }
+        .btn-predict:active {
+            transform: scale(0.98);
+        }
+        .history-box {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .history-title {
+            font-size: 13px;
+            color: #8b949e;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .history-list {
+            list-style: none;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            background: #21262d;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-card">
+        <div class="header">
+            <span class="badge">AI Engine v2.4</span>
+            <h1>CK Lottery Predictor</h1>
+            <p>Big / Small Pattern Analyzer</p>
+        </div>
+
+        <div class="timer-container">
+            <div class="timer-label">Next Round Countdown</div>
+            <div class="timer-value" id="timer">00:30</div>
+        </div>
+
+        <div class="prediction-box">
+            <div id="predictionResult" class="result-text" style="color: #8b949e; font-size: 18px;">
+                "Generate Signal" ကို နှိပ်ပါ
+            </div>
+            <div id="accuracy" class="accuracy-text"></div>
+        </div>
+
+        <button class="btn-predict" onclick="generatePrediction()">Generate Signal</button>
+
+        <div class="history-box">
+            <div class="history-title">
+                <span>Recent Predictions</span>
+                <span>Signal</span>
+            </div>
+            <ul class="history-list" id="historyList">
+                <!-- History Items will be added here -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let countdown = 30;
+        let timerInterval;
+
+        // Auto Countdown Timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                countdown--;
+                let seconds = countdown < 1
